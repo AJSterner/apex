@@ -2,7 +2,7 @@
 provides various functions for plotting longwave data
 """
 import numpy as np
-# from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
 
 def xyreduce(x, y, sample='lin', factor=16384):
     """
@@ -16,7 +16,7 @@ def xyreduce(x, y, sample='lin', factor=16384):
     samples = int(y.size) / factor
     assert samples > 0, 'factor must be less than array size. factor: {}, array: {}'.format(
         factor, y.size)
-    new_size = samples * per_sample
+    new_size = int(samples * per_sample)
 
     assert sample == 'lin' or sample == 'log', 'sample must be either \'lin\' or \'log\''
 
@@ -73,13 +73,16 @@ def semilogx(ax, x, y, reduced, *args):
 
 def plot_middle(ax1, x, y, size, reduce):
     """ plots data for middle graphs"""
-    ycore = abs(np.fft.fft(y))[:size]
-    loglog(ax1, x[:size], ycore, reduce)
+    fft = abs(np.fft.fft(y * np.hanning(size)[size-y.size:]))[:size]
+    loglog(ax1, x[:size], fft, reduce)
     # ax1.tick_params('y', colors='b')
-    ax2 = ax1.twinx()
-    semilogx(ax2, x[:size], np.sqrt(np.cumsum((ycore)**2)), reduce, 'r')
+    # ax2 = ax1.twinx()
+    # semilogx(ax2, x[:size], np.sqrt(np.cumsum((fft)**2)), reduce, 'r')
     # ax2.tick_params('y', colors='r')
 
+def nplot_middle(ax1, x, y, reduce):
+    fft = abs(np.fft.fft(y * np.hanning(y.size)))[:y.size/2]
+    loglog(ax1, x[:y.size/2], fft, reduce)
 
 # TODO: use reduce on x and y (remember to turn of sample step)
 def plot_bottom(ax, x, y, heatmap, *args):
@@ -91,7 +94,15 @@ def plot_bottom(ax, x, y, heatmap, *args):
         # y2, x2 = xyreduce(y, x, 'lin', 4096)
         # ax.plot(np.append(x1, x2), np.append(y1, y2), *args)
 
+        x = x - x.mean()
+        y = y - y.mean() # set center to (0,0)
+        width = max(x.max() - x.min(), y.max() - y.min())
+        width_buffer = .1 * width
+        pltrange = [-1 * width / 2 - width_buffer, width / 2 + width_buffer] # make square plot
         ax.plot(x, y, *args)
+
+        plt.xlim(pltrange)
+        plt.ylim(pltrange) #set plt ranges
 
 
 def plot_heatmap(ax, x, y):

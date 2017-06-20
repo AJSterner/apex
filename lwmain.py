@@ -59,12 +59,19 @@ def main(argv):
 
     # plot second row
     # TODO: semilogx axis labels
+    # for i in range(data['abs'].size):
+    #     ax = plt.subplot(3, 4, i + 5)
+    #     lwplot.plot_middle(ax, faxis, data['abs'][i], dsize/2, REDUCE2)
+    #     if i == 2:
+    #         lwplot.plot_middle(
+    #             ax, faxis, data['avr'][i][AVRFAC - 1:], dsize/2, REDUCE2)
+
     for i in range(data['abs'].size):
         ax = plt.subplot(3, 4, i + 5)
-        lwplot.plot_middle(ax, faxis, data['abs'][i], dsize/2, REDUCE2)
-        if i == 2:
-            lwplot.plot_middle(
-                ax, faxis, data['avr'][i][AVRFAC - 1:], dsize/2, REDUCE2)
+        lwplot.nplot_middle(ax, faxis, data['abs'][i], REDUCE2)
+        # if i == 2:
+        #     lwplot.nplot_middle(
+        #         ax, faxis, data['avr'][i][AVRFAC - 1:], REDUCE2)
 
     # plot third row
     for i in range(data['raw'].size):
