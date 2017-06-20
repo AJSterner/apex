@@ -13,7 +13,7 @@ import lwplot
 FCLK = 1300e6 / 7.0 * 11 / 20
 AVRFAC = 512
 
-SAMPLE_STEP = 50
+SAMPLE_STEP = 1
 
 REDUCE1 = True
 REDUCE2 = True
