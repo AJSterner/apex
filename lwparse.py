@@ -19,6 +19,7 @@ def parse(filename, yscale, avrfac):
         raw_data[i] = (np.array(data[i * 2]) + 1j *
                        np.array(data[i * 2 + 1])) / yscale
         abs_data[i] = abs(raw_data[i])
-        avr_data[i] = np.array(pd.Series(abs_data[i]).rolling(
-            window=avrfac, center=False).mean())
+        # avr_data[i] = np.array(pd.Series(abs_data[i]).rolling(
+        #     window=avrfac, center=False).mean())
+        avr_data[i] = np.array(pd.rolling_mean(abs_data[i], avrfac))
     return {'raw': raw_data, 'abs': abs_data, 'avr': avr_data}
