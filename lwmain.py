@@ -16,7 +16,7 @@ AVRFAC = 512
 SAMPLE_STEP = 1
 
 REDUCE1 = True
-REDUCE2 = True
+REDUCE2 = False
 HEATMAP3 = False
 
 
@@ -61,17 +61,20 @@ def main(argv):
     # TODO: semilogx axis labels
     # for i in range(data['abs'].size):
     #     ax = plt.subplot(3, 4, i + 5)
-    #     lwplot.plot_middle(ax, faxis, data['abs'][i], dsize/2, REDUCE2)
+    #     # lwplot.plot_middle(ax, faxis, data['abs'][i], dsize, REDUCE2)
     #     if i == 2:
-    #         lwplot.plot_middle(
-    #             ax, faxis, data['avr'][i][AVRFAC - 1:], dsize/2, REDUCE2)
+    #         lwplot.plot_middle(ax, faxis, data['avr'][i][AVRFAC - 1:], dsize, REDUCE2)
 
-    for i in range(data['abs'].size):
+    # for i in range(data['abs'].size):
+    #     ax = plt.subplot(3, 4, i + 5)
+    #     lwplot.nplot_middle(ax, faxis, data['abs'][i], REDUCE2)
+    #     if i == 2:
+    #         lwplot.nplot_middle(
+    #             ax, faxis, data['avr'][i][AVRFAC - 1:], REDUCE2)
+
+    for i in range(data['raw'].size):
         ax = plt.subplot(3, 4, i + 5)
-        lwplot.nplot_middle(ax, faxis, data['abs'][i], REDUCE2)
-        # if i == 2:
-        #     lwplot.nplot_middle(
-        #         ax, faxis, data['avr'][i][AVRFAC - 1:], REDUCE2)
+        lwplot.plot_phase(ax, taxis, data['raw'][i])
 
     # plot third row
     for i in range(data['raw'].size):

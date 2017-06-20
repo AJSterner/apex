@@ -71,10 +71,12 @@ def semilogx(ax, x, y, reduced, *args):
     #                labelsize='large')
 
 
-def plot_middle(ax1, x, y, size, reduce):
+def plot_middle(ax1, x, y, dsize, reduce):
     """ plots data for middle graphs"""
-    fft = abs(np.fft.fft(y[size-y.size:] * np.hanning(size)[size-y.size:]))[:size]
-    loglog(ax1, x[:size], fft, reduce)
+    # y = y * np.hanning(dsize)
+    # y = y[dsize-y.size:] * np.hanning(dsize)[dsize-y.size:]
+    fft = abs(np.fft.fft(y))[:dsize/2]
+    loglog(ax1, x[:dsize/2], fft, reduce)
 
     # ax1.tick_params('y', colors='b')
     # ax2 = ax1.twinx()
@@ -118,3 +120,7 @@ def plot_heatmap(ax, x, y):
     heatmap[heatmap < thresh] = np.nan
 
     ax.imshow(heatmap.T, cmap='jet', extent=extent, origin='lower')
+
+
+def plot_phase(ax, x, z, *args):
+    ax.plot(x, np.angle(z) - np.angle(z.mean()), *args)
