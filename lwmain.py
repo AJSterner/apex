@@ -76,8 +76,7 @@ def main(argv):
     # plot third row
     for i in range(data['raw'].size):
         ax = plt.subplot(3, 4, i + 9)
-        lwplot.plot_bottom(ax, data['raw'][i].real[::SAMPLE_STEP],
-                           data['raw'][i].imag[::SAMPLE_STEP], HEATMAP3, '.')
+        lwplot.plot_bottom(ax, data['raw'][i][::SAMPLE_STEP], HEATMAP3, '.')
 
     plt.suptitle(filename)
     plt.grid()

@@ -73,8 +73,9 @@ def semilogx(ax, x, y, reduced, *args):
 
 def plot_middle(ax1, x, y, size, reduce):
     """ plots data for middle graphs"""
-    fft = abs(np.fft.fft(y * np.hanning(size)[size-y.size:]))[:size]
+    fft = abs(np.fft.fft(y[size-y.size:] * np.hanning(size)[size-y.size:]))[:size]
     loglog(ax1, x[:size], fft, reduce)
+
     # ax1.tick_params('y', colors='b')
     # ax2 = ax1.twinx()
     # semilogx(ax2, x[:size], np.sqrt(np.cumsum((fft)**2)), reduce, 'r')
@@ -83,26 +84,29 @@ def plot_middle(ax1, x, y, size, reduce):
 def nplot_middle(ax1, x, y, reduce):
     fft = abs(np.fft.fft(y * np.hanning(y.size)))[:y.size/2]
     loglog(ax1, x[:y.size/2], fft, reduce)
+    xlo, xhi = plt.xlim()
+    plt.xlim([10**-1, xhi])
 
 # TODO: use reduce on x and y (remember to turn of sample step)
-def plot_bottom(ax, x, y, heatmap, *args):
+def plot_bottom(ax, z, heatmap, *args):
     """ plots data for bottom graphs"""
     if heatmap:
-        plot_heatmap(ax, x, y)
+        plot_heatmap(ax, z.real, z.imag)
     else:
+        
         # x1, y1 = xyreduce(x, y, 'lin', 4096)
         # y2, x2 = xyreduce(y, x, 'lin', 4096)
         # ax.plot(np.append(x1, x2), np.append(y1, y2), *args)
-
-        x = x - x.mean()
-        y = y - y.mean() # set center to (0,0)
+        theta = np.angle(z.mean())
+        z = z * np.exp(-1j * theta)
+        x = z.real
+        y = z.imag
         width = max(x.max() - x.min(), y.max() - y.min())
-        width_buffer = .1 * width
-        pltrange = [-1 * width / 2 - width_buffer, width / 2 + width_buffer] # make square plot
+        ax_width = .6 * width
         ax.plot(x, y, *args)
 
-        plt.xlim(pltrange)
-        plt.ylim(pltrange) #set plt ranges
+        plt.xlim([x.mean() - ax_width, x.mean() + ax_width])
+        plt.ylim([y.mean() - ax_width, y.mean() + ax_width]) #set plt ranges
 
 
 def plot_heatmap(ax, x, y):
