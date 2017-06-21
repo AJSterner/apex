@@ -1,22 +1,27 @@
 """ produces useful graphs from provided ldump file """
+from __future__ import print_function
 import re
 import sys
 # import glob
 # import os
 # import time
 import numpy as np
+import pandas as pd
 from matplotlib import pyplot as plt
+
 
 import lwparse
 import lwplot
 
 FCLK = 1300e6 / 7.0 * 11 / 20
 AVRFAC = 512
-
 SAMPLE_STEP = 1
 
+ROWS = 3
+COLS = 4
+
 REDUCE1 = True
-REDUCE2 = False
+REDUCE2 = True
 HEATMAP3 = False
 
 
@@ -33,9 +38,9 @@ def main(argv):
     scale = filep.read().split('\n')
     filep.close()
 
-    wave_samp_per = int(re.match(r'# wave_samp_per is (\d*)', scale[1]).group(1))
+    wave_samp_per = int(
+        re.match(r'# wave_samp_per is (\d*)', scale[1]).group(1))
     yscale = int(re.match(r'# yscale is (\d*)', scale[2]).group(1))
-
 
     tsamp = 1 / FCLK
     twave = (wave_samp_per / FCLK) * 22 * 2
@@ -74,7 +79,11 @@ def main(argv):
 
     for i in range(data['raw'].size):
         ax = plt.subplot(3, 4, i + 5)
-        lwplot.plot_phase(ax, taxis, data['raw'][i])
+        # lwplot.plot_phase(ax, taxis, data['raw'][i], REDUCE2)
+        z = data['raw'][i]
+        y = np.unwrap(np.angle(z) - np.angle(z.mean()))
+        lwplot.plot(ax, taxis, y, REDUCE2, 'y')
+        lwplot.plot(ax, taxis, lwparse.moving_mean(y, AVRFAC), REDUCE2, 'b')
 
     # plot third row
     for i in range(data['raw'].size):

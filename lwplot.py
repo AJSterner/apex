@@ -2,6 +2,7 @@
 provides various functions for plotting longwave data
 """
 import numpy as np
+import pandas as pd
 from matplotlib import pyplot as plt
 
 def xyreduce(x, y, sample='lin', factor=16384):
@@ -13,10 +14,10 @@ def xyreduce(x, y, sample='lin', factor=16384):
     assert x.size == y.size, 'arrays must have same length, {}, {}'.format(
         x.size, y.size)
     per_sample = 3
-    samples = int(y.size) / factor
+    samples = y.size // factor
     assert samples > 0, 'factor must be less than array size. factor: {}, array: {}'.format(
         factor, y.size)
-    new_size = int(samples * per_sample)
+    new_size = samples * per_sample
 
     assert sample == 'lin' or sample == 'log', 'sample must be either \'lin\' or \'log\''
 
@@ -28,6 +29,7 @@ def xyreduce(x, y, sample='lin', factor=16384):
     new_x = np.empty(new_size, dtype=x.dtype)
     new_y = np.empty(new_size, dtype=y.dtype)
 
+    assert isinstance(samples, int), "samples is {}, a {}".format(samples, type(samples))
     for i in range(samples):
         low = idx[i]
         high = idx[i + 1]
@@ -122,5 +124,8 @@ def plot_heatmap(ax, x, y):
     ax.imshow(heatmap.T, cmap='jet', extent=extent, origin='lower')
 
 
-def plot_phase(ax, x, z, *args):
-    ax.plot(x, np.angle(z) - np.angle(z.mean()), *args)
+def plot_phase(ax, x, z, reduce, *args):
+    y = np.unwrap(np.angle(z) - np.angle(z.mean()))
+    if reduce:
+        x, y = xyreduce(x, y)
+    ax.plot(x, y, *args)

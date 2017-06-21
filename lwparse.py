@@ -16,10 +16,19 @@ def parse(filename, yscale, avrfac):
     abs_data = np.empty(4, dtype=np.ndarray)
     avr_data = np.empty(4, dtype=np.ndarray)
     for i in range(4):
-        raw_data[i] = (np.array(data[i * 2]) + 1j *
-                       np.array(data[i * 2 + 1])) / yscale
+        # convert to complex np array
+        raw_data[i] = (np.array(data[i * 2]) +
+                       1j * np.array(data[i * 2 + 1])) / yscale
         abs_data[i] = abs(raw_data[i])
-        # avr_data[i] = np.array(pd.Series(abs_data[i]).rolling(
-        #     window=avrfac, center=False).mean())
-        avr_data[i] = np.array(pd.rolling_mean(abs_data[i], avrfac))
+        avr_data[i] = moving_mean(abs_data[i], avrfac)
     return {'raw': raw_data, 'abs': abs_data, 'avr': avr_data}
+
+
+def moving_mean(arr, window):
+    """ returns the rolling mean of arr as a np.ndarray """
+    assert isinstance(
+        arr, np.ndarray), "arr type must be np.ndarray not {}".format(arr.dtype)
+    if pd.__version__ >= '0.18.0':
+        return np.array(pd.Series(arr).rolling(window=window, center=False).mean())
+    else:
+        return np.array(pd.rolling_mean(arr, window))
