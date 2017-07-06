@@ -65,7 +65,7 @@ def semilogx(ax, x, y, reduced, *args):
     """ plots x and y on axis x with args"""
     if reduced:
         x, y = xyreduce(x, y, 'log')
-    ax.loglog(x, y, *args)
+    ax.semilogx(x, y, *args)
     # ax.tick_params(axis='y',
     #                reset=True,
     #                which='both',
@@ -73,23 +73,47 @@ def semilogx(ax, x, y, reduced, *args):
     #                labelsize='large')
 
 
-def plot_middle(ax1, x, y, dsize, reduce):
+def plot_fft(ax1, x, y, dsize, reduce):
     """ plots data for middle graphs"""
     # y = y * np.hanning(dsize)
     # y = y[dsize-y.size:] * np.hanning(dsize)[dsize-y.size:]
-    fft = abs(np.fft.fft(y))[:dsize/2]
-    loglog(ax1, x[:dsize/2], fft, reduce)
+    fft = abs(np.fft.fft(y))[:dsize//2]
+    loglog(ax1, x[:dsize//2], fft, reduce)
 
     # ax1.tick_params('y', colors='b')
     # ax2 = ax1.twinx()
     # semilogx(ax2, x[:size], np.sqrt(np.cumsum((fft)**2)), reduce, 'r')
     # ax2.tick_params('y', colors='r')
 
-def nplot_middle(ax1, x, y, reduce):
-    fft = abs(np.fft.fft(y * np.hanning(y.size)))[:y.size/2]
-    loglog(ax1, x[:y.size/2], fft, reduce)
+def nplot_fft(ax1, faxis, raw_data, reduce):
+    size = raw_data.size//2
+    fft = abs(np.fft.fft(raw_data * np.hanning(raw_data.size)))[:size]
+    # fft = abs(np.fft.fft(raw_data))[:size]
+    loglog(ax1, faxis[:size], fft, reduce)
+
+    # plot integral
+    ax2 = ax1.twinx()
+    semilogx(ax2, faxis[:size], np.sqrt(np.cumsum((fft)**2)), reduce, 'r')
+    # ax2.tick_params('raw_data', colors='r')
+
     xlo, xhi = plt.xlim()
     plt.xlim([10**-1, xhi])
+
+# def nplot_fft(ax1, faxis, raw_data, reduce):
+#     size = raw_data.size//2
+#     fft = abs(np.fft.fft(raw_data * np.hanning(raw_data.size)))[:size]
+#     # fft = abs(np.fft.fft(raw_data))[:size]
+#     semilogx(ax1, faxis[:size], np.sqrt(np.cumsum((fft)**2)), reduce, 'r')
+
+#     # # plot integral
+#     # ax2 = ax1.twinx()
+
+#     # loglog(ax2, faxis[:size], fft, reduce)
+#     # # ax2.tick_params('raw_data', colors='r')
+
+#     xlo, xhi = plt.xlim()
+#     plt.xlim([10**-1, xhi])
+
 
 # TODO: use reduce on x and y (remember to turn of sample step)
 def plot_bottom(ax, z, heatmap, *args):
